@@ -1,52 +1,57 @@
 import * as React from "react"
-import { PageProps, Link, graphql, HeadFC } from "gatsby"
-
+import { PageProps, graphql, HeadFC } from "gatsby"
+import postDataType from "../types/postDataType"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import BlogArchive from "../components/BlogArchive"
 
-type DataProps = {
-  site: {
-    buildTime: string
+interface WpPostData {
+  allWpPost: {
+    edges: {
+      node: postDataType;
+    }[]
   }
 }
 
-const IndexPage: React.FC<PageProps<DataProps>> = ({ data, location, }) => (
-  <Layout>
-    <h1>
-      Gatsby supports <b>TypeScript by default</b>
-    </h1>
-    <p>
-      This means that you can create and write <code>.ts/.tsx</code> files for
-      your pages, components, and <code>gatsby-*</code> configuration files (for
-      example <code>gatsby-config.ts</code>).
-    </p>
-    <p>
-      For type checking you'll want to install <code>typescript</code> via npm
-      and run <code>tsc --init</code> to create a <code>tsconfig</code> file.
-    </p>
-    <p>
-      You're currently on the page <code>{location.pathname}</code> which was
-      built on {data.site.buildTime}.
-    </p>
-    <p>
-      To learn more, head over to our{" "}
-      <a href="https://www.gatsbyjs.com/docs/how-to/custom-configuration/typescript/">
-        documentation about TypeScript
-      </a>
-      .
-    </p>
-    <Link to="/">Go back to the homepage</Link>
-  </Layout>
-)
+const IndexPage: React.FC<PageProps<WpPostData>> = ({ data }) => {
+  const postsData = data.allWpPost.edges;
 
-export const Head: HeadFC<DataProps> = () => <Seo />
+  return (
+    <Layout>
+      <BlogArchive postsData={ postsData } />
+    </Layout>
+  )
+}
+
+export const Head: HeadFC<WpPostData> = () => <Seo />
 
 export default IndexPage;
 
 export const query = graphql`
-  {
-    site {
-      buildTime(formatString: "YYYY-MM-DD hh:mm a z")
+  query {
+    allWpPost {
+      edges {
+        node {
+          id
+          title
+          link
+          date(formatString: "YYYY年MM月DD日")
+          slug
+          content
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          categories {
+            nodes {
+              name
+              link
+            }
+          }
+        }
+      }
     }
   }
 `
