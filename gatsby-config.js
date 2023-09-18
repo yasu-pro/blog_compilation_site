@@ -7,12 +7,18 @@
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
+
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
 module.exports = {
   siteMetadata: {
     title: `yasu's Blog Compilation site`,
     description: `Blog summary site using wp-rest-api in Gatsby.js`,
     author: `@gatsbyjs`,
     siteUrl: `https://gatsbystarterdefaultsource.gatsbyjs.io/`,
+    baseURl: process.env.WP_BASE_URL,
   },
   plugins: [
     'gatsby-plugin-typescript',
@@ -38,6 +44,25 @@ module.exports = {
         // theme_color: `#663399`,
         display: `minimal-ui`,
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+      },
+    },
+    {
+      resolve: "gatsby-source-wordpress",
+      options: {
+        baseURl: process.env.WP_BASE_URL,
+        url: `${process.env.WP_BASE_URL}/graphql`,
+        protocol: "https",
+        hostingWPCOM: false,
+        useACF: false,
+        includedRoutes: [
+          "**/categories",
+          "**/posts",
+          "**/pages",
+          "**/media",
+          "**/tags",
+          "**/taxonomies",
+          "**/users",
+        ],
       },
     },
   ],
